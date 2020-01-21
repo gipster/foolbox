@@ -76,7 +76,7 @@ class CarliniWagnerL2Attack(Attack):
             return
 
         min_, max_ = a.bounds()
-        print("800A")
+
         def to_attack_space(x):
             # map from [min_, max_] to [-1, +1]
             a = (min_ + max_) / 2
