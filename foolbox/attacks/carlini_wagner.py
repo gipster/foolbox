@@ -145,45 +145,14 @@ class CarliniWagnerL2Attack(Attack):
             for iteration in range(max_iterations):
                 x, dxdp = to_model_space(att_original + att_perturbation)
                 logits, is_adv = yield from a.forward_one(x)
-                ################################################
-                
-#                x_trans = ad.vae(x.reshape((1,) + x.shape)).numpy()
-#                x_trans = x_trans.reshape(x.shape)
-#                logits_trans, is_adv_trans = yield from a.forward_one(x_trans)
-#
-#                proba_orig = tf.nn.softmax(logits)
-#                proba_trans = tf.nn.softmax(logits_trans)
-#                print('preds orig  shape', proba_orig.shape)
-#                print('preds trans shape', proba_trans.shape)
-#
-                loss_function_2 = tf.keras.losses.kld
 
-#                    g.watch(x)
-#                    loss2 = loss_function_2(proba_orig, proba_trans)
-#                gradients2 = g.gradients(loss2, x)
-                x_tensor = tf.convert_to_tensor(x)
-                with tf.GradientTape() as g:
-                    g.watch(x_tensor)
-                    x_trans = ad.vae(x_tensor)
-                    # x_trans = x_trans.reshape(x.shape)
-                    logits_trans, is_adv_trans = yield from a.forward_one(x_trans.numpy())
-
-                    proba_orig = tf.nn.softmax(logits)
-                    proba_trans = tf.nn.softmax(logits_trans)
-                    print('preds orig  shape', proba_orig.shape)
-                    print('preds trans shape', proba_trans.shape)
-
-                    loss_function_2 = tf.keras.losses.kld
-                    loss2 = -loss_function_2(proba_orig, proba_trans)
-
-                gradients2 = g.gradient(loss2, x)
-                ##########################################################
                 loss, dldx = yield from self.loss_function(
                     const, a, x, logits, reconstructed_original, confidence, min_, max_
                 )
 
+                loss2, gradients2 = yield  from self.loss_function2(const, a, ad, logits)
                 logging.info(
-                    "loss: {}; best overall distance: {}".format(loss, a.distance)
+                    "loss: {}; best overall distance: {}; loss2: {}".format(loss, a.distance, loss2)
                 )
 
                 # backprop the gradient of the loss w.r.t. x further
@@ -224,6 +193,52 @@ class CarliniWagnerL2Attack(Attack):
             else:
                 # binary search
                 const = (lower_bound + upper_bound) / 2
+
+    @classmethod
+    def loss_function2(
+        cls, const, a, ad, x, logits
+    ):
+        """Returns the loss and the gradient of the loss w.r.t. x,
+        assuming that logits = model(x)."""
+
+        x_tensor = tf.convert_to_tensor(x.reshape((1,) + x.shape))
+        with tf.GradientTape() as g:
+            g.watch(x_tensor)
+            x_trans = ad.vae(x_tensor)
+            # x_trans = x_trans.reshape(x.shape)
+            logits_trans, is_adv_trans = yield from a.forward_one(x_trans.numpy().reshape(x.shape))
+
+            proba_orig = tf.nn.softmax(logits)
+            proba_trans = tf.nn.softmax(logits_trans)
+            print('preds orig  shape', proba_orig.shape)
+            print('preds trans shape', proba_trans.shape)
+
+            loss_function_2 = tf.keras.losses.kld
+            loss2 = -loss_function_2(proba_orig, proba_trans)
+
+        gradients2 = g.gradient(loss2, x)
+        print(type(loss2), type(gradients2))
+        ##########################################################
+
+
+        #squared_l2_distance = np.sum((x - reconstructed_original) ** 2) / s ** 2
+        #total_loss = squared_l2_distance + const * is_adv_loss
+
+        # calculate the gradient of total_loss w.r.t. x
+        #logits_diff_grad = np.zeros_like(logits)
+        #logits_diff_grad[c_minimize] = 1
+        #logits_diff_grad[c_maximize] = -1
+        #is_adv_loss_grad = yield from a.backward_one(logits_diff_grad, x)
+        #assert is_adv_loss >= 0
+        #if is_adv_loss == 0:
+        #    is_adv_loss_grad = 0
+
+        #squared_l2_distance_grad = (2 / s ** 2) * (x - reconstructed_original)
+
+        #total_loss_grad = squared_l2_distance_grad + const * is_adv_loss_grad
+        #return total_loss, total_loss_grad
+        return loss2, gradients2
+
 
     @classmethod
     def loss_function(
