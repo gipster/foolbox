@@ -162,7 +162,7 @@ class CarliniWagnerL2Attack(Attack):
 #                    loss2 = loss_function_2(proba_orig, proba_trans)
 #                gradients2 = g.gradients(loss2, x)
                 x_tensor = tf.convert_to_tensor(x)
-                with tf.GradientTape as g:
+                with tf.GradientTape() as g:
                     g.watch(x_tensor)
                     x_trans = ad.vae(x_tensor)
                     # x_trans = x_trans.reshape(x.shape)
