@@ -144,7 +144,7 @@ class CarliniWagnerL2Attack(Attack):
             for iteration in range(max_iterations):
                 x, dxdp = to_model_space(att_original + att_perturbation)
                 logits, is_adv = yield from a.forward_one(x)
-                x_trans = ad.vae(x).numpy()
+                x_trans = ad.vae(x.reshape((1,) + x.shape)).numpy()
                 print(type(x_trans))
                 loss, dldx = yield from self.loss_function(
                     const, a, x, logits, reconstructed_original, confidence, min_, max_
