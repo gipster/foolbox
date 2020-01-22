@@ -151,27 +151,30 @@ class CarliniWagnerL2Attack(Attack):
                 x_trans = x_trans.reshape(x.shape)
                 logits_trans, is_adv_trans = yield from a.forward_one(x_trans)
                 
-                preds_orig = tf.nn.softmax(logits)                
-                preds_trans = tf.nn.softmax(logits_trans)
-                print('preds orig  shape', preds_orig.shape)
-                print('preds trans shape', preds_trans.shape)
+                proba_orig = tf.nn.softmax(logits)
+                proba_trans = tf.nn.softmax(logits_trans)
+                print('preds orig  shape', proba_orig.shape)
+                print('preds trans shape', proba_trans.shape)
 
                 loss_function_2 = tf.keras.losses.kld
-                with tf.GradientTape as g:
-                    g.watch(x)
-                    x_trans = ad.vae(x.reshape((1,) + x.shape)).numpy()
-                    x_trans = x_trans.reshape(x.shape)
-                    logits_trans, is_adv_trans = yield from a.forward_one(x_trans)
+                loss2 = loss_function_2(proba_orig, proba_trans)
+                gradients2 = tf.gradients(loss2, x)
 
-                    proba_orig = tf.nn.softmax(logits)
-                    proba_trans = tf.nn.softmax(logits_trans)
-                    print('preds orig  shape', proba_orig.shape)
-                    print('preds trans shape', proba_trans.shape)
+                #with tf.GradientTape as g:
+                #    g.watch(x)
+                #    x_trans = ad.vae(x.reshape((1,) + x.shape)).numpy()
+                #    x_trans = x_trans.reshape(x.shape)
+                #    logits_trans, is_adv_trans = yield from a.forward_one(x_trans)
 
-                    loss_function_2 = tf.keras.losses.kld
-                    loss2 = -loss_function_2(proba_orig, proba_trans)
+                #    proba_orig = tf.nn.softmax(logits)
+                #    proba_trans = tf.nn.softmax(logits_trans)
+                #    print('preds orig  shape', proba_orig.shape)
+                #    print('preds trans shape', proba_trans.shape)
 
-                gradients2 = g.gradient(loss2, x)
+                #    loss_function_2 = tf.keras.losses.kld
+                #    loss2 = -loss_function_2(proba_orig, proba_trans)
+
+                #gradients2 = g.gradient(loss2, x)
                 ##########################################################
                 loss, dldx = yield from self.loss_function(
                     const, a, x, logits, reconstructed_original, confidence, min_, max_
