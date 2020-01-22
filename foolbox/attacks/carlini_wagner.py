@@ -150,7 +150,7 @@ class CarliniWagnerL2Attack(Attack):
                     const, a, x, logits, reconstructed_original, confidence, min_, max_
                 )
 
-                loss2, gradients2 = yield  from self.loss_function2(const, a, ad, logits)
+                loss2, gradients2 = yield  from self.loss_function2(const, a, ad, x, logits)
                 logging.info(
                     "loss: {}; best overall distance: {}; loss2: {}".format(loss, a.distance, loss2)
                 )
