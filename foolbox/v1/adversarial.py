@@ -405,6 +405,7 @@ class Adversarial(object):
 
         self._total_gradient_calls += 1
         gradient = self.__model.gradient_one(x, label)
+        print(self.__detector)
         if self.__detector is not None:
             gradient_detector = self.__detector.gradient_one(x, x)
             gradient_tot = gradient + self.__loss_w * gradient_detector
