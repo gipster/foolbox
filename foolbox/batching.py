@@ -8,6 +8,8 @@ from .adversarial import Adversarial
 def run_sequential(
     create_attack_fn,
     model,
+    detector,
+    loss_w,
     criterion,
     inputs,
     labels,
@@ -100,6 +102,8 @@ def run_sequential(
     advs = [
         Adversarial(
             model,
+            detector,
+            loss_w,
             _criterion,
             x,
             label,

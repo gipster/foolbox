@@ -13,10 +13,10 @@ from ..distances import MSE
 
 class Attack(BaseAttack):
     def __init__(
-        self, model=None, criterion=Misclassification(), distance=MSE, threshold=None
+        self, model=None, detector=None, loss_w=0, criterion=Misclassification(), distance=MSE, threshold=None
     ):
         super(Attack, self).__init__(
-            model=model, criterion=criterion, distance=distance, threshold=threshold
+            model=model, detector=detector, loss_w=loss_w, criterion=criterion, distance=distance, threshold=threshold
         )
         self.__call__.__func__.__doc__ = self.as_generator.__doc__
 
@@ -28,6 +28,8 @@ class Attack(BaseAttack):
             raise ValueError("The number of inputs and labels needs to be equal")
 
         model = self._default_model
+        detector = self._default_detector
+        loss_w = self._default_loss_w
         criterion = self._default_criterion
         distance = self._default_distance
         threshold = self._default_threshold
@@ -43,6 +45,8 @@ class Attack(BaseAttack):
         advs = run_parallel(
             create_attack_fn,
             model,
+            detector,
+            loss_w,
             criterion,
             inputs,
             labels,

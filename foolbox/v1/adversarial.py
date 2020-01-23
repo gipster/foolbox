@@ -53,6 +53,8 @@ class Adversarial(object):
     def __init__(
         self,
         model,
+        detector,
+        loss_w,
         criterion,
         unperturbed,
         original_class,
@@ -64,6 +66,8 @@ class Adversarial(object):
             raise ValueError("criterion should be an instance, not a class")
 
         self.__model = model
+        self.__detector = detector
+        self.__loss_w = loss_w
         self.__criterion = criterion
         self.__unperturbed = unperturbed
         self.__unperturbed_for_distance = unperturbed
@@ -401,7 +405,9 @@ class Adversarial(object):
 
         self._total_gradient_calls += 1
         gradient = self.__model.gradient_one(x, label)
-
+        if self.__detector is not None:
+            gradient_detector = self.__detector.gradient_one(x, x)
+            gradient += self.__loss_w * gradient_detector
         assert gradient.shape == x.shape
         return gradient
 
