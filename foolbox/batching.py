@@ -143,6 +143,8 @@ def run_sequential(
 def run_parallel(  # noqa: C901
     create_attack_fn,
     model,
+    detector,
+    loss_w,
     criterion,
     inputs,
     labels,
@@ -235,6 +237,8 @@ def run_parallel(  # noqa: C901
     advs = [
         Adversarial(
             model,
+            detector,
+            loss_w,
             _criterion,
             x,
             label,
