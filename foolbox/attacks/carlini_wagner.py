@@ -5,7 +5,6 @@ from .base import Attack
 from .base import generator_decorator
 from ..utils import onehot_like
 
-import tensorflow as tf
 
 class CarliniWagnerL2Attack(Attack):
     """The L2 version of the Carlini & Wagner attack.
@@ -27,8 +26,6 @@ class CarliniWagnerL2Attack(Attack):
     def as_generator(
         self,
         a,
-        ad=None,
-        loss_w=None,
         binary_search_steps=5,
         max_iterations=1000,
         confidence=0,
@@ -145,7 +142,6 @@ class CarliniWagnerL2Attack(Attack):
             for iteration in range(max_iterations):
                 x, dxdp = to_model_space(att_original + att_perturbation)
                 logits, is_adv = yield from a.forward_one(x)
-
                 loss, dldx = yield from self.loss_function(
                     const, a, x, logits, reconstructed_original, confidence, min_, max_
                 )
