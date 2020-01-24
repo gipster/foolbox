@@ -275,14 +275,11 @@ def run_parallel(  # noqa: C901
         attacks_requesting_batched_predictions = []
         batched_predictions_args = []
         for attack, result in zip(attacks, results):
-            print(type(attack), type(result))
             try:
                 x = attack.send(result)
             except StopIteration:
                 continue
             method, args = x[0], x[1:]
-            print(type(x))
-            assert False
 
             if method == "forward_one":
                 attacks_requesting_predictions.append(attack)
@@ -301,6 +298,9 @@ def run_parallel(  # noqa: C901
                 batched_predictions_args.append(args)
             else:
                 assert False
+            print(gradients)
+            assert False
+
         n_active_attacks = (
             len(attacks_requesting_predictions)
             + len(attacks_requesting_gradients)
