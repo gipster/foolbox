@@ -298,8 +298,6 @@ def run_parallel(  # noqa: C901
                 batched_predictions_args.append(args)
             else:
                 assert False
-            print(gradients)
-            assert False
 
         n_active_attacks = (
             len(attacks_requesting_predictions)
@@ -397,4 +395,6 @@ def run_parallel(  # noqa: C901
         results = itertools.chain(
             predictions, gradients, backwards, prediction_gradients, batched_predictions
         )
+        print(gradients)
+        assert False
     return advs
