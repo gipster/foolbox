@@ -407,7 +407,10 @@ class Adversarial(object):
         gradient = self.__model.gradient_one(x, label)
         print(self.__detector)
         if self.__detector is not None:
-            gradient_detector = self.__detector.gradient_one(x, x)
+            print(type(x))
+            break
+
+            gradient_detector = self.__detector.gradient(x, x)
             gradient_tot = gradient + self.__loss_w * gradient_detector
             print((gradient_tot == gradient).all())
         else:
