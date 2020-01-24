@@ -55,8 +55,6 @@ class Attack(BaseAttack):
             individual_kwargs=individual_kwargs,
             **kwargs,
         )
-        print(type(advs))
-        assert False
 
         if unpack:
             advs = [a.perturbed for a in advs]
