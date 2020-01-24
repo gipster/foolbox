@@ -158,7 +158,7 @@ class CarliniWagnerL2Attack(Attack):
                 # grad_x_wrt_p is a matrix of elementwise derivatives
                 # (i.e. each x[i] w.r.t. p[i] only, for all i) and
                 # grad_loss_wrt_x is a real gradient reshaped as a matrix
-                print(type(x))
+                print(x.shape)
                 assert False
                 gradient = dldx * dxdp
 
