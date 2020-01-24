@@ -395,6 +395,5 @@ def run_parallel(  # noqa: C901
         results = itertools.chain(
             predictions, gradients, backwards, prediction_gradients, batched_predictions
         )
-        print(gradients)
-        assert False
+
     return advs
