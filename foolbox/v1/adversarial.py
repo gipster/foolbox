@@ -408,7 +408,7 @@ class Adversarial(object):
         print(self.__detector)
         if self.__detector is not None:
             print(type(x))
-            break
+            suca
 
             gradient_detector = self.__detector.gradient(x, x)
             gradient_tot = gradient + self.__loss_w * gradient_detector
