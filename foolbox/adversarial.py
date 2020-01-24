@@ -132,6 +132,8 @@ class Adversarial(BaseAdversarial):
 
         """
         assert self.has_gradient()
+        print(type(x))
+        assert False
 
         if x is None:
             x = self._Adversarial__unperturbed
