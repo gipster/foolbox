@@ -276,13 +276,13 @@ def run_parallel(  # noqa: C901
         batched_predictions_args = []
         for attack, result in zip(attacks, results):
             print(type(attack), type(result))
-            print(type(x))
-            assert False
             try:
                 x = attack.send(result)
             except StopIteration:
                 continue
             method, args = x[0], x[1:]
+            print(type(x))
+            assert False
 
             if method == "forward_one":
                 attacks_requesting_predictions.append(attack)
