@@ -9,6 +9,7 @@ import tensorflow
 
 
 def get_detector_gradients(x, detector):
+    x = x.reshape((1, ) + x.shape)
     x = tensorflow.convert_to_tensor(x)
     loss = tensorflow.keras.losses.kld
 
