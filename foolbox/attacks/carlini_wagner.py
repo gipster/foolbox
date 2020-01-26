@@ -42,8 +42,8 @@ class CarliniWagnerL2Attack(Attack):
     def as_generator(
         self,
         a,
-        detector,
-        loss_w,
+        detector=None,
+        loss_w=0,
         binary_search_steps=5,
         max_iterations=1000,
         confidence=0,
