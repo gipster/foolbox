@@ -13,7 +13,7 @@ from ..distances import MSE
 
 class Attack(BaseAttack):
     def __init__(
-        self, model=None, detector=None, loss_w=0, criterion=Misclassification(), distance=MSE, threshold=None
+        self, model=None, criterion=Misclassification(), distance=MSE, threshold=None
     ):
         super(Attack, self).__init__(
             model=model, criterion=criterion, distance=distance, threshold=threshold

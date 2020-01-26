@@ -50,7 +50,7 @@ class Attack(abc.ABC):
     """
 
     def __init__(
-        self, model=None, detector=None, loss_w=0, criterion=Misclassification(), distance=MSE, threshold=None
+        self, model=None, criterion=Misclassification(), distance=MSE, threshold=None
     ):
         self._default_model = model
         self._default_detector = detector
