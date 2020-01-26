@@ -5,6 +5,23 @@ from .base import Attack
 from .base import generator_decorator
 from ..utils import onehot_like
 
+import tensorflow
+
+
+def get_detector_gradients(x, detector):
+    x = tensorflow.convert_to_tensor(x)
+    loss = tensorflow.keras.losses.kld
+
+    with tensorflow.GradientTape() as g:
+      g.watch(x)
+      x_trans = detector.vae(x)
+      prob_orig = tensorflow.nn.softmax(detector.model(x))
+      prob_trans = tensorflow.nn.softmax(detector.model(x_trans))
+      loss_val = -loss(prob_orig, prob_trans)
+
+    gradients = g.gradient(loss_val, x)
+    return gradients.numpy()
+
 
 class CarliniWagnerL2Attack(Attack):
     """The L2 version of the Carlini & Wagner attack.
@@ -26,6 +43,8 @@ class CarliniWagnerL2Attack(Attack):
     def as_generator(
         self,
         a,
+        detector=None,
+        loss_w=0,
         binary_search_steps=5,
         max_iterations=1000,
         confidence=0,
@@ -159,6 +178,10 @@ class CarliniWagnerL2Attack(Attack):
                 # (i.e. each x[i] w.r.t. p[i] only, for all i) and
                 # grad_loss_wrt_x is a real gradient reshaped as a matrix
                 gradient = dldx * dxdp
+                if detector is not None:
+                    print(type(detector))
+                    gradient_detector = get_detector_gradients(x, detector)
+                    gradient += loss_w * gradient_detector
 
                 att_perturbation += optimizer(gradient, learning_rate)
 
