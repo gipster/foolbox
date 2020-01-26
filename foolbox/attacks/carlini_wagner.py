@@ -9,7 +9,8 @@ import tensorflow
 
 
 def get_detector_gradients(x, detector):
-    x = x.reshape((1, ) + x.shape)
+    x_shape = x.shape
+    x = x.reshape((1, ) + x_shape)
     x = tensorflow.convert_to_tensor(x)
     loss = tensorflow.keras.losses.kld
 
@@ -21,7 +22,7 @@ def get_detector_gradients(x, detector):
       loss_val = -loss(prob_orig, prob_trans)
 
     gradients = g.gradient(loss_val, x)
-    return gradients.numpy()
+    return gradients.numpy().reshape(x_shape)
 
 
 class CarliniWagnerL2Attack(Attack):
