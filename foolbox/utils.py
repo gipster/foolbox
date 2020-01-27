@@ -3,6 +3,24 @@ import warnings
 
 import numpy as np
 
+import tensorflow
+
+def get_detector_gradients(x, detector):
+    x_shape = x.shape
+    x = x.reshape((1, ) + x_shape)
+    x = tensorflow.convert_to_tensor(x)
+    loss = tensorflow.keras.losses.kld
+
+    with tensorflow.GradientTape() as g:
+      g.watch(x)
+      x_trans = detector.vae(x)
+      prob_orig = tensorflow.nn.softmax(detector.model(x))
+      prob_trans = tensorflow.nn.softmax(detector.model(x_trans))
+      loss_val = loss(prob_orig, prob_trans)
+
+    gradients = g.gradient(loss_val, x)
+    return gradients.numpy().reshape(x_shape)
+
 
 def softmax(logits):
     """Transforms predictions into probability values.

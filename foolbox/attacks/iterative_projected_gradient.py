@@ -10,7 +10,9 @@ from ..utils import crossentropy
 from .. import nprng
 from ..optimizers import AdamOptimizer
 from ..optimizers import GDOptimizer
+from ..utils import get_detector_gradients
 
+logging.basicConfig(level=logging.WARNING)
 
 class IterativeProjectedGradientBaseAttack(Attack):
     """Base class for iterative (projected) gradient attacks.
@@ -196,6 +198,8 @@ class IterativeProjectedGradientBaseAttack(Attack):
             gradient = yield from self._gradient(
                 a, x, class_, strict=strict, gradient_args=gradient_args
             )
+            print('800A', type(gradient))
+            print(gradient.shape)
             # non-strict only for the first call and
             # only if random_start is True
             strict = True
