@@ -13,9 +13,11 @@ def get_detector_gradients(x, detector):
 
     with tensorflow.GradientTape() as g:
       g.watch(x)
-      x_trans = detector.vae(x)
-      prob_orig = tensorflow.nn.softmax(detector.model(x))
-      prob_trans = tensorflow.nn.softmax(detector.model(x_trans))
+      x_trans = detector.ae(x)
+      #prob_orig = tensorflow.nn.softmax(detector.model(x))
+      #prob_trans = tensorflow.nn.softmax(detector.model(x_trans))
+      prob_orig = detector.model(x)
+      prob_trans = detector.model(x_trans)
       loss_val = loss(prob_orig, prob_trans)
 
     gradients = g.gradient(loss_val, x)
